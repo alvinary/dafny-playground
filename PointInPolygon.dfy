@@ -51,7 +51,7 @@ function CheckIntersection(a1 : real, a2 : real, b1 : real, b2 : real, c1 : real
 }
 
 // We prove that the computation indeed verifies the condition
-lemma CheckIntersectionChecksIntersection(s1 : Segment, s2 : Segment) 
+lemma CheckIntersectionChecksIntersection(s1 : Segment, s2 : Segment)
 ensures CheckIntersection(s1.end.0 - s1.origin.0, s1.end.1 - s1.origin.1,
                           s2.origin.0 - s2.end.0, s2.origin.1 - s2.end.1, 
                           s2.origin.0 - s1.origin.0, s2.origin.1 - s1.origin.1) ==> SegmentsIntersect(s1, s2)
@@ -65,33 +65,50 @@ ensures CheckIntersection(s1.end.0 - s1.origin.0, s1.end.1 - s1.origin.1,
 
     var determinant := a1 * b2 - a2 * b1;
 
-    if (determinant != 0.0 && a1 != 0.0)
+    if (determinant != 0.0)
     {
-        var k := (a1 * c2 - a2 * c1) / determinant;
-        var q := (c1 - b1 * k) / a1;
-        assert (
-            s1.origin.0 + q * (s1.end.0 - s1.origin.0) == s2.origin.0 + k * (s2.end.0 - s2.origin.0) &&
-            s1.origin.1 + q * (s1.end.1 - s1.origin.1) == s2.origin.1 + k * (s2.end.1 - s2.origin.1)
-        );
-    }
+        if (a1 != 0.0)
+        {
+            var k := (a1 * c2 - a2 * c1) / determinant;
+            var q := (c1 - b1 * k) / a1;
+            assert determinant != 0.0;
+            assert (
+                s1.origin.0 + q * (s1.end.0 - s1.origin.0) == s2.origin.0 + k * (s2.end.0 - s2.origin.0) &&
+                s1.origin.1 + q * (s1.end.1 - s1.origin.1) == s2.origin.1 + k * (s2.end.1 - s2.origin.1)
+            );
+        }
 
-    if (determinant != 0.0 && a1 == 0.0)
-    {
-        var k := (a1 * c2 - a2 * c1) / determinant;
-        var q := (c2 - b2 * k) / a2;
-        assert s1.end.0 == s1.origin.0;
-        assert s1.origin.1 + q * (s1.end.1 - s1.origin.1) == s2.origin.1 + k * (s2.end.1 - s2.origin.1);
-        assert q * (s1.end.0 - s1.origin.0) == 0.0;
-        assert s1.origin.0 + q * (s1.end.0 - s1.origin.0) == s1.origin.0;
-        assert s1.origin.0 + q * (s1.end.0 - s1.origin.0) == s2.origin.0 + k * (s2.end.0 - s2.origin.0);
+        if (a1 == 0.0)
+        {
+            var k := (a1 * c2 - a2 * c1) / determinant;
+            var q := (c2 - b2 * k) / a2;
+            assert s1.end.0 == s1.origin.0;
+            assert s1.origin.1 + q * (s1.end.1 - s1.origin.1) == s2.origin.1 + k * (s2.end.1 - s2.origin.1);
+            assert q * (s1.end.0 - s1.origin.0) == 0.0;
+            assert s1.origin.0 + q * (s1.end.0 - s1.origin.0) == s1.origin.0;
+            assert s1.origin.0 + q * (s1.end.0 - s1.origin.0) == s2.origin.0 + k * (s2.end.0 - s2.origin.0);
+        }
     }
+    else
+    {
 
-    if (determinant == 0.0 && (a1 * c2 - a2 * c1) == 0.0 && (b1 * c2 - b2 * c1) == 0.0)
-    {
-        assert true;
-    }
-    else {
-        assert false;
+        assert determinant == 0.0;
+
+        if ((a1 * c2 - a2 * c1) == 0.0 && (b1 * c2 - b2 * c1) == 0.0)
+        {
+            assert true;
+        }
+        else 
+            {
+                assert determinant == 0.0;
+                assert !((a1 * c2 - a2 * c1) == 0.0) || !((b1 * c2 - b2 * c1) == 0.0);
+                assert determinant == a1 * b2 - a2 * b1;
+                assert !((a1 * c2 - a2 * c1) == 0.0 && (b1 * c2 - b2 * c1) == 0.0);
+                assert !CheckIntersection(s1.end.0 - s1.origin.0, s1.end.1 - s1.origin.1,
+                                        s2.origin.0 - s2.end.0, s2.origin.1 - s2.end.1, 
+                                        s2.origin.0 - s1.origin.0, s2.origin.1 - s1.origin.1);
+                assert !SegmentsIntersect(s1, s2);
+            }
     }
 }
 
