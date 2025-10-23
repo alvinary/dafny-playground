@@ -1,7 +1,10 @@
 /* 
 We prove that counting the number of intersections between a ray cast from a point
 and the boundaries of the polyon decides if the point lies within the polygon,
-provided none of the edges crossed at the boundary are colinear with the ray.
+provided none of the edges crossed at the boundary are colinear with the ray,
+
+We assume without loss of generality that the point is not the origin, and that the
+polygon has all segments with endpoints whose coordinates are greater than zero.
 */
 
 // We start by defining segments
@@ -19,6 +22,12 @@ ghost predicate SymplePolygon(p : seq<Segment>)
 requires Polygon(p)
 {
     forall s, t :: s in p && t in p ==> !SegmentsIntersect(s, t)
+}
+
+ghost predicate NonTrivalPolygon(p : seq<Segment>)
+requires Polygon(p)
+{
+    forall i :: 0 <= i < |p| ==> p[i].end != p[i].origin
 }
 
 // A polygon is a positive polygon if it lies squarely within the 'positive' quadrant of the plane
@@ -49,6 +58,39 @@ function CheckIntersection(a1 : real, a2 : real, b1 : real, b2 : real, c1 : real
             else false
         else true
 }
+
+/*
+            var ox := s1.origin.0;
+            var oy := s1.origin.1;
+            var ex := s1.end.0;
+            var ey := s1.end.1;
+
+            var px := s2.origin.0;
+            var py := s2.origin.1;
+            var fx := s2.end.0;
+            var fy := s2.end.1;
+
+            if (px == ox && py == oy)
+            {
+                var x1 := 0.0;
+                var x2 := 0.0;
+                assert
+                    s1.origin.0 + x1 * (s1.end.0 - s1.origin.0) == s2.origin.0 + x2 * (s2.end.0 - s2.origin.0);
+                assert
+                    s1.origin.1 + x1 * (s1.end.1 - s1.origin.1) == s2.origin.1 + x2 * (s2.end.1 - s2.origin.1);
+                assert
+                    s1.origin.1 + x1 * (s1.end.1 - s1.origin.1) == s2.origin.1 + x2 * (s2.end.1 - s2.origin.1) &&
+                    s1.origin.1 + x1 * (s1.end.1 - s1.origin.1) == s2.origin.1 + x2 * (s2.end.1 - s2.origin.1);
+            }
+
+            // ex != ox
+            if (s1.end.1 > s2.origin.1 && ex != ox)
+            {
+                var k := (px - ox) / (ex - ox);
+                assert ox + k * (ex - ox) == px;
+                assert oy + k * (ey - oy) == py;
+            }
+            */
 
 // We prove that the computation indeed verifies the condition
 lemma CheckIntersectionChecksIntersection(s1 : Segment, s2 : Segment)
@@ -127,6 +169,8 @@ function SegmentsCross(s1 : Segment, s2 : Segment) : bool
 
 // For some reason, Dafny needs this as a separate lemma
 lemma CrossedSegmentsCross(s1 : Segment, s2 : Segment)
+requires s1.end != s1.origin
+requires s2.end != s2.origin
 ensures SegmentsCross(s1, s2) <==> CheckIntersection(
         s1.end.0 - s1.origin.0,
         s1.end.1 - s1.origin.1,
@@ -147,17 +191,17 @@ ensures SegmentsCross(s1, s2) <==> SegmentsIntersect(s1, s2)
 }
 
 lemma UnaryCrossedSegmentsIntersect(s1 : Segment)
-ensures forall s2 :: SegmentsCross(s1, s2) ==> SegmentsIntersect(s1, s2)
+ensures forall s2 : Segment :: s2.end != s2.origin ==> SegmentsCross(s1, s2) ==> SegmentsIntersect(s1, s2)
 {
     var s2 :| true;
     {
-        if (SegmentsCross(s1, s2))
+        if (SegmentsCross(s1, s2) && s2.end != s2.origin)
         {
             assert SegmentsCross(s1, s2);
             CheckIntersectionChecksIntersection(s1, s2);
             assert SegmentsIntersect(s1, s2);
         }
-        else
+        if (!SegmentsCross(s1, s2) && s2.end != s2.origin)
         {
             assert !SegmentsCross(s1, s2);
             CheckIntersectionChecksIntersection(s1, s2);
@@ -197,6 +241,7 @@ ensures forall x: T :: x in filter(xs, p) ==> q(x)
 function BorderClashes(point : (real, real), polygon : seq<Segment>) : seq<Segment>
 requires Polygon(polygon)
 requires PositivePolygon(polygon)
+requires NonTrivalPolygon(polygon)
 ensures forall segment :: segment in BorderClashes(point, polygon) ==> SegmentsIntersect(Fugue(point), segment)
 {
     UnaryCrossedSegmentsIntersect(Fugue(point));
@@ -215,7 +260,7 @@ requires Polygon(polygon)
 
 Pending proof parts:
 
-* Case where the determinant is zero
+* Case where segments are colinear
 * Exclude segment ends from clashes
     * Define intersection for crossing segments, to get a point
 * Excluding the end of every segment saves us from
