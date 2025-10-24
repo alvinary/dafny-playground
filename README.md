@@ -15,11 +15,12 @@ The idea is that, if you were a point inside a convex polygon, and you suddenly 
 line on a fixed direction, you'd 'run through' a wall just once, when exiting.
 
 If you were outside the polygon, and marched towards it, you'd go through a wall once,
-breaking into the polygon, and then a second time, breaking out. 
+breaking into the polygon, and then a second time, breaking out. If you were outside,
+and marched away from it, then you'd never touch any of its sides / you'd collide zero times.
 
 So the parity of the number of crossings tells you where the point was, for convex polygons.
 
-If the polygon is non-convex, the same holds, since whenever you cross a side of the polygon,
+If the polygon is non-convex, nothing changes much, since whenever you cross a side of the polygon,
 you 'switch' your inside/outside status. The point does not know if it was inside or outside
 the polygon, but it can count the number of times it crosses an edge. 
 
