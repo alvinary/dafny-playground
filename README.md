@@ -21,11 +21,11 @@ and marched away from it, then you'd never touch any of its sides / you'd collid
 So the parity of the number of crossings tells you where the point was, for convex polygons.
 
 If the polygon is non-convex, nothing changes much, since whenever you cross a side of the polygon,
-you 'switch' your inside/outside status. The point does not know if it was inside or outside
-the polygon, but it can count the number of times it crosses an edge. 
-
-If that number is even, then the point's initial location was inside the polygon, and if the
-number of crossings is odd, then the polygon started inside.
+you just 'switch' your inside/outside status. And the point does not know if it was inside or outside
+the polygon before moving, but it can count the number of times it crossed an edge: if that number is even,
+then the point's initial location was inside the polygon, and if the number of crossings is odd, then the
+polygon started inside, provided that it traveled far enough to not have 'missed' some side by stopping
+short before reaching it.
 
 The algorithm is surprisingly simple and the idea is very natural and intuitive, but
 correct implementations require handling non-trivial corner cases properly, and the
