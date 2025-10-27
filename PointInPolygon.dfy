@@ -193,22 +193,22 @@ ensures SegmentsCross(s1, s2) <==> SegmentsIntersect(s1, s2)
 lemma UnaryCrossedSegmentsIntersect(s1 : Segment)
 ensures forall s2 : Segment :: s2.end != s2.origin ==> SegmentsCross(s1, s2) ==> SegmentsIntersect(s1, s2)
 {
-    var s2 :| true;
+    forall s2 : Segment
+    ensures SegmentsCross(s1, s2) ==> SegmentsIntersect(s1, s2)
     {
-        if (SegmentsCross(s1, s2) && s2.end != s2.origin)
+        if (SegmentsCross(s1, s2))
         {
             assert SegmentsCross(s1, s2);
             CheckIntersectionChecksIntersection(s1, s2);
             assert SegmentsIntersect(s1, s2);
         }
-        if (!SegmentsCross(s1, s2) && s2.end != s2.origin)
+        if (!SegmentsCross(s1, s2))
         {
             assert !SegmentsCross(s1, s2);
             CheckIntersectionChecksIntersection(s1, s2);
             assert !SegmentsIntersect(s1, s2);
         }
     }
-    assert forall s2 :: SegmentsCross(s1, s2) ==> SegmentsIntersect(s1, s2);
 }
 
 // We define the ray cast from the point
