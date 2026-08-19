@@ -3,6 +3,17 @@
 `mergeSort.dfy` contains a short proof of correctness for mergesort that
 more or less mimics a paper proof.
 
+## Induced Subgraph Isomorphism
+
+The file contains a short proof that five three-variable statements are
+equivalent to the usual four-variable definition of induced subgraph isomorphism.
+
+This is relevant because naive encodings of the problem into SAT have `O(n**4)`
+clauses, and the encoding that results from these five statements has a lower
+complexity of `O(|Δ||V||W|)`, where `V` is the set of vertices in `G`, `W` is 
+the number of vertices in H, and `Δ` is the highest degree in both `G` and `H`,
+which is close to one of the efficient standard encodings.
+
 ## Decide if a Point Lies Inside a Polygon
 
 Suppose you wanted to check if a point is inside or outside a non-convex polygon.
