@@ -31,7 +31,7 @@ subgraph isomorphism.
 If one encodes these axioms as CNFs restricting the
 ranges of some variables to vertices that are already
 neighbors in a graph, one can encode induced subgraph
-isomorphism using O(diameter(H)|V||W|) and O(diameter(G)|V||W|),
+isomorphism using O(diameter(H)|V||W|) and O(diameter(G)|V||W|) clauses,
 where W is the set of vertices in G and V is the set of vertices in H.
 
 This is close to the complexity of the standard encoding
