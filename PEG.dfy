@@ -16,7 +16,7 @@ ensures End(expression, sequence, index, grammar, acc, allPreterminals) != Nil <
   if index >= |sequence| then Nil
   else match expression
     case Character(a) =>
-      if sequence[0] == a then Full(index + 1) else Nil
+      if sequence[index] == a then Full(index + 1) else Nil
     case Negation(p1) =>
       if End(p1, sequence, index, grammar, acc, allPreterminals) == Nil
       then Full(index) else Nil
@@ -42,7 +42,7 @@ predicate Match<A(==), B(==, !new)>(
 {
   if index >= |sequence| then false
   else match expression
-    case Character(a) => sequence[0] == a
+    case Character(a) => sequence[index] == a
     case Negation(p1) =>
       !Match(p1, sequence, index, grammar, acc, allPreterminals)
     case OrderedAlternative(p1, p2) =>
