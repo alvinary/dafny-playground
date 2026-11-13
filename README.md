@@ -14,6 +14,12 @@ complexity of `O(|Δ||V||W|)`, where `V` is the set of vertices in `G`, `W` is
 the number of vertices in H, and `Δ` is the highest degree in both `G` and `H`,
 which is close to one of the efficient standard encodings.
 
+## Parsing a sequence with a PEG, when the Grammar has no Left Recursion
+
+`PEG.dfy` has a straightforward definition of a PEG parse, a no left-recursion check,
+and a termination proof, which rests on the hypothesis that the grammar passes
+the no left-recursion check.
+
 ## Decide if a Point Lies Inside a Polygon
 
 Suppose you wanted to check if a point is inside or outside a non-convex polygon.
