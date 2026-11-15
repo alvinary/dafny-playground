@@ -18,7 +18,11 @@ which is close to one of the efficient standard encodings.
 
 `PEG.dfy` has a straightforward definition of a PEG parse, a no left-recursion check,
 and a termination proof, which rests on the hypothesis that the grammar passes
-the no left-recursion check.
+the no left-recursion check. The semantics are borrowed from a couple papers by Medeiros,
+and the main issue is proving the abscence of cycles in the grammar implies termination.
+
+Dafny proves fully automatically that the mutually recursive definitions of End and Match
+are equivalent (in the sense that `End(p, s, i, ...) == Nil` iff `Match(p, s, i, ...)`.
 
 ## Decide if a Point Lies Inside a Polygon
 
