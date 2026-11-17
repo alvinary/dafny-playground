@@ -13,7 +13,10 @@ requires LoopFree(expression, grammar, acc, allPreterminals)
 decreases |ReachablePreterminals(expression, grammar, acc, allPreterminals)|, expression
 ensures End(expression, sequence, index, grammar, acc, allPreterminals) != Nil <==> Match(expression, sequence, index, grammar, acc, allPreterminals)
 {
-  if index >= |sequence| then Nil
+  if index >= |sequence|
+  then (match expression
+        case Negation(p1) => Full(index)
+        case _ => Nil)
   else match expression
     case Character(a) =>
       if sequence[index] == a then Full(index + 1) else Nil
@@ -40,7 +43,10 @@ predicate Match<A(==), B(==, !new)>(
   requires LoopFree(expression, grammar, acc, allPreterminals)
   decreases |ReachablePreterminals(expression, grammar, acc, allPreterminals)|, expression, |sequence| - index
 {
-  if index >= |sequence| then false
+  if index >= |sequence|
+  then (match expression
+        case Negation(p1) => true
+        case _ => false)
   else match expression
     case Character(a) => sequence[index] == a
     case Negation(p1) =>
